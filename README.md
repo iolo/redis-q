@@ -6,6 +6,8 @@ redis-q
 usage
 -----
 
+### Q(my favorite promise/A+ impl) support
+
 * to apply Q with default suffix 'Q':
 
 ```javascript
@@ -94,6 +96,8 @@ client.multi()
   .done();
 ```
 
+### JSON support
+
 * **EXPERIMENTAL** to use JSON object for a value parameter/result with `json`:
 
 ```javascript
@@ -110,11 +114,19 @@ client.setQ('a', {b:'c', d:'e'})
 var redis = require('redis-q')(require('redis'), {json:true});
 var client = redis.createClient(...);
 client.multi()
-  .setQ(...) // NOTE: setQ not set
+  .setQ('a', 'b') // NOTE: setQ not set
+  .setQ('b', ['c', 123, true])
+  .setQ('c', {d:'e', f:123, g:true})
   .setQ(...)
   ...
   .execQ() // no 'Q' suffix for multi methods except for execQ()
-  .then(function (results) { assert(results instanceof Array); })
+  .then(function (results) {
+    assert(results instanceof Array);
+    return client.mgetQ('a', 'b', 'c', ...);
+  })
+  .then(function (result) {
+    assert(result instanceof Array);
+  })
   .catch(function (err) { ... })
   .done();
 ```
