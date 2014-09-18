@@ -4,7 +4,7 @@ var
     Q = require('q'),
     apslice = Array.prototype.slice,
     debug = console.log.bind(console),
-    DEBUG = true;//!!process.env.REDISQ_DEBUG;
+    DEBUG = process.env.REDISQ_DEBUG;
 
 /**
  * @module redisq
