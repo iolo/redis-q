@@ -1,0 +1,25 @@
+{
+  "name": "redis-q",
+  "version": "0.0.1",
+  "description": "kriskowal's Q support for redis",
+  "author": "Dongsu Jang <iolothebard@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "git://git@github.com/iolo/redis-q.git"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": "~0.10"
+  },
+  "dependencies": {
+    "q": "^1.0.0",
+    "redis": "^0.12.1",
+    "hiredis": "^0.1.17"
+  },
+  "devDependencies": {
+    "mocha": "latest",
+    "grunt": "latest",
+    "grunt-contrib-jshint": "latest",
+    "grunt-mocha-test": "latest"
+  }
+}
