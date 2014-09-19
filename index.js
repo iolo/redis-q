@@ -13,36 +13,47 @@ var
 
 /**
  *
- * @param {*} obj
- * @returns {string|Array}
+ * @param {*|array} args *array-like* of objects
+ * @returns {Array.<string>} array-like to array of encoded items
  */
-function encode(obj) {
-    try {
-//        if (obj instanceof Array) {
-//            return obj.map(encode);
-//        }
-        return JSON.stringify(obj);
-    } catch (e) {
-        // ignore error! and give up!
-        return obj;
+function encode(args) {
+    var len = args.length;
+    var result = new Array(len);
+    for (var i = 0; i < len; i++) {
+        var arg = args[i];
+        // fix #2 - do not encode standalone string to json
+        if (typeof arg !== 'string') {
+            try {
+                arg = JSON.stringify(arg);
+            } catch (e) {
+                // ignore error! and give up!
+            }
+        }
+        result[i] = arg;
     }
+    DEBUG && debug('encode:', args, '-->', result);
+    return result;
 }
 
 /**
  *
- * @param {string|Array} str
- * @returns {*}
+ * @param {string|Array} str encoded string or array of encoded strings
+ * @returns {*|Array} array to array of decoded objects. string to decoded objects.
  */
 function decode(str) {
-    try {
-        if (str instanceof Array) {
-            return str.map(decode);
+    var result;
+    if (str instanceof Array) {
+        result = str.map(decode);
+    } else {
+        try {
+            result = JSON.parse(str);
+        } catch (e) {
+            // ignore error! and give up!
+            result = str;
         }
-        return JSON.parse(str);
-    } catch (e) {
-        // ignore error! and give up!
-        return str;
     }
+    DEBUG && debug('decode:', str, '-->', result);
+    return result;
 }
 
 /**
@@ -82,19 +93,17 @@ function qualify(obj, funcNames, funcNameMapper, json) {
         DEBUG && console.log('qualify function:', funcName, '-->', mappedFuncName);
         obj[mappedFuncName] = function () {
             var d = Q.defer();
-            var args = apslice.call(arguments);
+            var args;
             // EXPERIMENTAL!!! with 'json' option
-            if (json) {
-                args = args.map(encode);
-            }
-            DEBUG && debug('encode:', arguments, '-->', args);
+            args = (json)
+                ? encode(arguments)
+                : apslice.call(arguments);
             args.push(function (err, result) {
                 if (err) {
                     return d.reject(err);
                 }
                 // EXPERIMENTAL!!! with 'json' option
                 if (json) {
-                    DEBUG && debug('decode:', result);
                     result = decode(result);
                 }
                 return d.resolve(result);
@@ -122,9 +131,7 @@ function jsonify(obj, funcNames, funcNameMapper) {
         DEBUG && console.log('jsonify function:', funcName, '-->', mappedFuncName);
         obj[mappedFuncName] = function () {
             // EXPERIMENTAL!!!
-            var args = apslice.call(arguments).map(encode);
-            DEBUG && debug('encode:', arguments, '-->', args);
-            return func.apply(this, args);
+            return func.apply(this, encode(arguments));
         };
     });
 }
