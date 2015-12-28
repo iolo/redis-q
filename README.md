@@ -1,6 +1,9 @@
 redis-q
 =======
 
+> **DEPRECATED** [bluebird's promisify](http://bluebirdjs.com/docs/api/promise.promisifyall.html) is recommended by [node_redis officially](https://github.com/NodeRedis/node_redis#promises)
+> [ES6 Promise Support Request is rejected officially](https://github.com/NodeRedis/node_redis/issues/864) :'(
+
 [kriskowal's Q](http://documentup.com/kriskowal/q/) support for [node_redis](https://github.com/mranney/node_redis).
 
 usage
